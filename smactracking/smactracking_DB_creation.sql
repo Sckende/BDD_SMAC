@@ -92,7 +92,7 @@ CREATE TABLE balise_data_acquisitions (
     data_pre_processing BOOLEAN NOT NULL,
     data_exploitable BOOLEAN NOT NULL,
     data_analyse BOOLEAN NOT NULL,
-    data_lieu_stockage data_lieu_acquisition_list,
+    data_lieu_stockage data_lieu_stockage_list,
     nom_fichier VARCHAR(20) NOT NULL,
     acqui_remarque TEXT
 );
@@ -135,7 +135,7 @@ CREATE TABLE gps_depl_metadatas (
 CREATE TABLE argos_depl_metadatas (
     argos_depl_metadata_id BIGSERIAL NOT NULL PRIMARY KEY,
     action_deploiement_id INT REFERENCES action_deploiements (action_deploiement_id),
-    methode_depl meth_list,
+    methode_depl methode_deploiement_list,
     argos_remarque TEXT
     );
 -- Sous-classe A3 --
