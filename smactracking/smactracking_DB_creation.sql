@@ -1,31 +1,30 @@
 -- CREATE DATABASE smactracking;
 
-CREATE TYPE action_list
-AS ENUM ('installation',
+CREATE TYPE balise_action_list
+AS ENUM ('deploiement',
          'controle',
          'recuperation');
 
 
-CREATE TYPE meth_list
+CREATE TYPE methode_deploiement_list
 AS ENUM ('harnais',
          'tesa_sur_queue',
          'sous_cutane');
 
-CREATE TYPE gls_extr_list
-AS ENUM ('ok/echec',
-         'labo/echec',
-         'envoye/echec',
-         'echec/echec',
-         'ok/ok');
+CREATE TYPE acquisition_mode_list
+AS ENUM ('balise',
+         'station',
+         'online');
 
-CREATE TYPE gps_extr_list
-AS ENUM ('en_stock',
-         'sur_station_acquisition',
-         'extraction_defaillante');
+CREATE TYPE acquisition_donnees_list
+AS ENUM ('donnees_dispo',
+         'donnees_non_dispo',
+         'envoi_constructeur');
 
-CREATE TYPE argos_extr_list
-AS ENUM ('en_stock',
-         'extraction_defaillante');
+CREATE TYPE data_lieu_stockage_list
+AS ENUM ('ordinateur',
+         'serveur',
+         'ordinateur_serveur');
 
 CREATE TABLE intervenants (
     intervenant_id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -67,9 +66,9 @@ CREATE TABLE missions_protocoles (
 CREATE TABLE balises (
     balise_id BIGSERIAL NOT NULL PRIMARY KEY,
     balise_type VARCHAR(20),
-    balise_marque varchar(50),
+    balise_marque VARCHAR(50),
     balise_modele VARCHAR(20),
-    balise_num_serie VARCHAR(20),
+    balise_identifiant VARCHAR(20),
     balise_poids FLOAT
 );
     
@@ -77,51 +76,44 @@ CREATE TABLE balise_actions (
     balise_action_id BIGSERIAL NOT NULL PRIMARY KEY,
     balise_id INT REFERENCES balises (balise_id),
     intervenant_id INT REFERENCES intervenants (intervenant_id),
-    CMR_bague VARCHAR(9),
-    balise_action action_list,
+    cmr_bague VARCHAR(9),
+    balise_action balise_action_list,
     action_date DATE,
     action_heure TIME,
     action_remarque TEXT
 );
--- Surclasse A --
+
 CREATE TABLE balise_data_acquisitions (
     balise_data_acquisition_id BIGSERIAL NOT NULL PRIMARY KEY,
     balise_action_id INT REFERENCES balise_actions (balise_action_id),
-    acqui_date DATE NOT NULL,
+    acquisition_mode acquisition_mode_list,
+    acquisition_date DATE NOT NULL,
+    acquisition_donnees acquisition_donnees_list,
+    data_pre_processing BOOLEAN NOT NULL,
+    data_exploitable BOOLEAN NOT NULL,
     data_analyse BOOLEAN NOT NULL,
-    data_stockage VARCHAR(20) NOT NULL,
+    data_lieu_stockage data_lieu_acquisition_list,
     nom_fichier VARCHAR(20) NOT NULL,
     acqui_remarque TEXT
 );
--- Sous-classe A1 --
-CREATE TABLE gps_extractions (
-    gps_extraction_id BIGSERIAL NOT NULL PRIMARY KEY,
+
+CREATE TABLE gls_fichiers_disponibles (
+    gls_fichiers_disponible_id BIGSERIAL NOT NULL PRIMARY KEY,
     balise_data_acquisition_id INT REFERENCES balise_data_acquisitions (balise_data_acquisition_id),
-    gps_statut_extraction gps_extr_list,
-    gps_extr_last_update TIMESTAMP
+    lig BOOLEAN NOT NULL,
+    lig_filtre BOOLEAN NOT NULL,
+    act BOOLEAN NOT NULL,
+    temp BOOLEAN NOT NULL
 );
--- Sous-classe A2 --
-CREATE TABLE gls_extractions (
-    gls_extraction_id BIGSERIAL NOT NULL PRIMARY KEY,
-    balise_data_acquisition_id INT REFERENCES balise_data_acquisitions (balise_data_acquisition_id),
-    gps_statut_extraction gls_extr_list,
-    gls_extr_last_update TIMESTAMP
-);
--- Sous-classe A3 --
-CREATE TABLE argos_extractions (
-    argos_extraction_id BIGSERIAL NOT NULL PRIMARY KEY,
-    balise_data_acquisition_id INT REFERENCES balise_data_acquisitions (balise_data_acquisition_id),
-    argos_statut_extraction argos_extr_list,
-    argos_extr_last_update TIMESTAMP
-);
--- Surclasse B --
+
+-- Surclasse A --
 CREATE TABLE action_deploiements (
     action_deploiement_id BIGSERIAL NOT NULL PRIMARY KEY,
     balise_action_id INT REFERENCES balise_actions (balise_action_id),
     balise_date_allumage DATE,
     balise_heure_allumage TIME
 );
--- Sous-classe B1 --
+-- Sous-classe A1 --
 CREATE TABLE gps_depl_metadatas (
     gps_depl_metadata_id BIGSERIAL NOT NULL PRIMARY KEY,
     action_deploiement_id INT REFERENCES action_deploiements (action_deploiement_id),
@@ -139,14 +131,14 @@ CREATE TABLE gps_depl_metadatas (
     work_hour_end TIME,
     gps_remarque TEXT
 );
--- Sous-classe B2 --
+-- Sous-classe A2 --
 CREATE TABLE argos_depl_metadatas (
     argos_depl_metadata_id BIGSERIAL NOT NULL PRIMARY KEY,
     action_deploiement_id INT REFERENCES action_deploiements (action_deploiement_id),
     methode_depl meth_list,
     argos_remarque TEXT
     );
--- Sous-classe B3 --
+-- Sous-classe A3 --
 CREATE TABLE gls_depl_metadatas (
     gls_depl_metadata_id BIGSERIAL NOT NULL PRIMARY KEY,
     action_deploiement_id INT REFERENCES action_deploiements (action_deploiement_id),
