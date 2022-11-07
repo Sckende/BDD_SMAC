@@ -290,7 +290,7 @@ AS ENUM ('99',
 CREATE TABLE localites (
     localite_id BIGSERIAL NOT NULL PRIMARY KEY,
     localite VARCHAR(60), -- CRBPO
-    dpt VARCHAR(4), -- CRBPO
+    dept VARCHAR(4), -- CRBPO
     pays VARCHAR(2) -- CRBPO
 );
 
@@ -298,8 +298,8 @@ CREATE TABLE lieudits (
     lieudit_id BIGSERIAL NOT NULL PRIMARY KEY,
     localite_id INT REFERENCES localites (localite_id),
     lieudit VARCHAR(60), -- CRBPO
-    lat FLOAT, -- CRBPO
-    lon FLOAT -- CRBPO
+    lat FLOAT NOT NULL DEFAULT 99.99, -- CRBPO
+    lon FLOAT NOT NULL DEFAULT 99.99-- CRBPO
 );
 
 CREATE TABLE protocoles (
@@ -310,10 +310,10 @@ CREATE TABLE protocoles (
 
 CREATE TABLE intervenants (
     intervenant_id BIGSERIAL NOT NULL PRIMARY KEY,
-    interv_nom varchar(50),
-    interv_prenom varchar(50),
-    initiale varchar(6),
-    organisme varchar(50)
+    interv_nom VARCHAR(50),
+    interv_prenom VARCHAR(50),
+    initiale VARCHAR(6),
+    organisme VARCHAR(50)
 );
         
 CREATE TABLE missions (
