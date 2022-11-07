@@ -1,3 +1,5 @@
+-- CREATE DATABASE smacdemo;
+
 -- List creation
     -- demo::type_piege
 CREATE TYPE type_piege_list
@@ -170,7 +172,7 @@ AS ENUM ('J',
 
     -- baguages::bird_sexe
 CREATE TYPE bird_sexe_list
-AS TYPE ('?',
+AS ENUM ('?',
          'F',
          'M',
          'F?',
@@ -178,7 +180,7 @@ AS TYPE ('?',
 
     -- baguages::methode_sexage
 CREATE TYPE methode_sexage_list
-AS TYPE ('genetique',
+AS ENUM ('genetique',
          'phenotypique',
          'sanguin',
          'autres');
@@ -340,25 +342,25 @@ CREATE TABLE missions_protocoles (
 
 -- Table parent
 CREATE TABLE demo (
-    lieudit_id INT REFERENCES lieudits (lieudit_id) 
+    lieudit_id INT REFERENCES lieudits (lieudit_id),
     id_prog id_prog_list, -- CRBPO
-    centre DEFAULT "FRP", -- CRBPO
-    theme_session DEFAULT "PROG PERS", -- CRBPO
-    theme DEFAULT "PROG PERS", -- CRBPO
+    centre VARCHAR(3) NOT NULL DEFAULT 'FRP', -- CRBPO
+    theme_session VARCHAR(9) NOT NULL DEFAULT 'PROG PERS', -- CRBPO
+    theme VARCHAR(9) NOT NULL DEFAULT 'PROG PERS', -- CRBPO
     origine_data origine_data_list,
     type_piege type_piege_list, -- CRBPO
     effort_capture effort_capture_list, -- CRBPO
-    espece espece_list -- CRBPO
-    bagueur  INT REFERENCES intervenants (intervenant_id) -- CRBPO
-    
+    espece espece_list, -- CRBPO
+    bagueur  INT REFERENCES intervenants (intervenant_id), -- CRBPO
+    modif_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE manip_oiseaux (
     manip_oiseau_id BIGSERIAL NOT NULL PRIMARY KEY,
-    dateheure_manip DATETIME, -- CRBPO
+    dateheure_manip TIMESTAMP, -- CRBPO
     action bird_action_list, -- CRBPO, need to CREATE TYPE
-    bague_pd VARCHAR(8), -- voir la taille et le format du code
-    bague_pg VARCHAR(8),
+    bague_pd VARCHAR(8) NOT NULL, -- voir la taille et le format du code
+    bague_pg VARCHAR(8) NOT NULL,
     code_darvik VARCHAR(10), -- voir taille et format du code
     couleur_darvik VARCHAR(20),
     pds FLOAT,
@@ -368,7 +370,8 @@ CREATE TABLE manip_oiseaux (
     etat_mue etat_mue_list, -- CRBPO,  need to CREATE TYPE
     bagueur_vrai INT REFERENCES intervenants (intervenant_id), -- CRBPO, TO CHECK
     stagiaire_formation INT REFERENCES intervenants (intervenant_id), -- CRBPO, TO CHECK
-    remarque_manip TEXT
+    remarque_manip TEXT,
+    modif_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE nid_metadatas (
@@ -406,7 +409,7 @@ CREATE TABLE baguages (
     morpho_complete BOOLEAN,
     sexe bird_sexe_list, -- CRBPO, NEED TO CREATE TYPE
     methode_sexage methode_sexage_list, -- NEED TO CREATE TYPE
-    groupe_genetique -- TO DEFINE
+    groupe_genetique VARCHAR(30)-- TO DEFINE
 );
 
 CREATE TABLE reprises (
@@ -422,16 +425,16 @@ CREATE TABLE oiseau_soins (
     localite_relache INT REFERENCES localites (localite_id), 
     date_decouverte DATE, -- voir si equivalent a la date de baguage
     date_relache DATE,
-    centre_soins DEFAULT "valeur_unique", -- CRBPO, toujours le meme ?
+    centre_soins VARCHAR(30) NOT NULL DEFAULT 'Couzi - UFCS, François-Xavier', -- CRBPO, toujours le meme ?
     memo TEXT, -- CRBPO, a garder ?
     couleir_iris TEXT, -- CRBPO, a garder ?
-    type_marque ??, -- CRBPO, a garder ?
-    couleur_gauche ??, -- CRBPO, a garder ?
-    couleur_droite ??, -- CRBPO, a garder ?
-    sens_lecture_gauche ??, -- CRBPO, a garder ?
-    sens_lecture_droite ??, -- CRBPO, a garder ?
-    inscription_gauche ??, -- CRBPO, a garder ?
-    inscription_droite ??, -- CRBPO, a garder ?
+    type_marque VARCHAR(10), -- CRBPO, a garder ?
+    couleur_gauche VARCHAR(10), -- CRBPO, a garder ?
+    couleur_droite VARCHAR(10), -- CRBPO, a garder ?
+    sens_lecture_gauche VARCHAR(10), -- CRBPO, a garder ?
+    sens_lecture_droite VARCHAR(10), -- CRBPO, a garder ?
+    inscription_gauche VARCHAR(10), -- CRBPO, a garder ?
+    inscription_droite VARCHAR(10), -- CRBPO, a garder ?
     numero_inventaire INT,
     tete_reseau INT REFERENCES intervenants (intervenant_id)
 );
