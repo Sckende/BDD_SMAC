@@ -68,7 +68,7 @@ lieudits <- left_join(lieud,
                       by = "key")
 names(lieudits) <- tolower(names(lieudits))
 
-# virer les NA & remplacer par ""
+# virer les NA & remplacer par 99.99
 lieudits$lat[is.na(lieudits$lat)] <- 99.99
 lieudits$lon[is.na(lieudits$lon)] <- 99.99
 
@@ -76,3 +76,34 @@ lieudits$lon[is.na(lieudits$lon)] <- 99.99
 # write.csv(lieudits[, c("localite_id", "lieudit", "lat", "lon")],
 #           row.names = FALSE,
 #           "C:/Users/Public/TABLE_LIEUDITS_insertions.csv")
+
+#### STEP 3 -  Table "Intervenants" ####
+# Champs necessaires
+# interv_nom/interv_prenom/initiales/organisme
+head(crbpo)
+int <- unique(crbpo$BG)
+int <- int[order(int)]
+
+# Typo correction
+int1 <- int[-c(3, 5, 10)]
+
+# Recuperation des initiales
+ll1 <- strsplit(int1, ", ") # | means or
+ll2 <- lapply(ll1,
+              rev)
+int2 <- as.data.frame(do.call("rbind", ll2))
+names(int2) <- c("interv_prenom", "interv_nom")
+int2$interv_nom <- toupper(int2$interv_nom)
+
+int2$i1 <- substr(int2$interv_prenom, 1, 1)
+
+ll3 <- strsplit(int2$interv_nom, " |-") # | means or
+ll4 <- lapply(ll3, substr, 1, 1)
+int2$i2 <- sapply(ll4, paste, collapse ="")
+
+int2$initiales <- paste(int2$i1, int2$i2, sep = "")
+int2$organisme <- c(rep("UR", 3), "PNR", "UR", "ONF", "PNR", rep("UR", 3))
+
+# write.csv(int2[, c("interv_nom", "interv_prenom", "initiales", "organisme")],
+#           row.names = FALSE,
+#           "C:/Users/Public/TABLE_INTERVENANTS_insertions.csv")

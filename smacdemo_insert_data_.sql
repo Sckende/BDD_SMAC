@@ -21,3 +21,15 @@ COPY lieudits
 TO 'C:\Users\Public\TABLE_LIEUDITS_updated.csv'
 DELIMITER ','
 CSV HEADER;
+
+    -- STEP 3 - table INTERVENANTS
+COPY intervenants(interv_nom, interv_prenom, initiales, organisme)
+FROM 'C:\Users\Public\TABLE_INTERVENANTS_insertions.csv'
+DELIMITER ','
+CSV HEADER;
+
+-- pour recuperer la derniere mise a jour & intervenant_id
+COPY intervenants
+TO 'C:\Users\Public\TABLE_INTERVENANTS_updated.csv'
+DELIMITER ','
+CSV HEADER;

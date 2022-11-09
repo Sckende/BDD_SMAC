@@ -315,7 +315,10 @@ CREATE TABLE intervenants (
     initiale VARCHAR(6),
     organisme VARCHAR(50)
 );
-        
+
+ALTER TABLE intervenants
+RENAME COLUMN initiale to initiales;       
+ 
 CREATE TABLE missions (
     mission_id BIGSERIAL NOT NULL PRIMARY KEY,
     mission_nom VARCHAR(50),
