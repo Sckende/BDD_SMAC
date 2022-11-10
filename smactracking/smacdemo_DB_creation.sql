@@ -316,8 +316,12 @@ CREATE TABLE intervenants (
     organisme VARCHAR(50)
 );
 
+
 ALTER TABLE intervenants
 RENAME COLUMN initiale to initiales;       
+
+ALTER TABLE intervenants
+ADD UNIQUE (initiales);
  
 CREATE TABLE missions (
     mission_id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -329,6 +333,16 @@ CREATE TABLE missions (
     cr BOOLEAN,
     nom_cr VARCHAR(50)
 );
+
+ALTER TABLE missions
+DROP COLUMN nom_cr;
+
+ALTER TABLE missions
+DROP COLUMN localisation;
+
+ALTER TABLE missions
+ADD lieudit_id INT REFERENCES lieudits (lieudit_id);
+
 -- Association 1 --
 CREATE TABLE missions_intervenants (
     mission_id INT REFERENCES missions (mission_id),
