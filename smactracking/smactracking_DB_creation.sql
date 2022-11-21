@@ -26,24 +26,39 @@ AS ENUM ('ordinateur',
          'serveur',
          'ordinateur_serveur');
 
+CREATE TABLE localites (
+    localite_id BIGSERIAL NOT NULL PRIMARY KEY,
+    localite VARCHAR(60), -- CRBPO
+    dept VARCHAR(4), -- CRBPO
+    pays VARCHAR(2) -- CRBPO
+);
+
+CREATE TABLE lieudits (
+    lieudit_id BIGSERIAL NOT NULL PRIMARY KEY,
+    localite_id INT REFERENCES localites (localite_id),
+    lieudit VARCHAR(60), -- CRBPO
+    lat FLOAT NOT NULL DEFAULT 99.99, -- CRBPO
+    lon FLOAT NOT NULL DEFAULT 99.99-- CRBPO
+);
+
 CREATE TABLE intervenants (
     intervenant_id BIGSERIAL NOT NULL PRIMARY KEY,
     interv_nom varchar(50),
     interv_prenom varchar(50),
-    initiale varchar(6),
+    initiales varchar(6) UNIQUE,
     organisme varchar(50)
 );
         
 CREATE TABLE missions (
     mission_id BIGSERIAL NOT NULL PRIMARY KEY,
     mission_nom VARCHAR(50),
-    localisation VARCHAR(50),
     mission_date_debut DATE,
     mission_date_fin DATE,
+    lieudit_id INT REFERENCES lieudits (lieudit_id),
     fonds VARCHAR(50),
-    cr BOOLEAN,
-    nom_cr VARCHAR(50)
+    cr BOOLEAN
 );
+
 -- Association 1 --
 CREATE TABLE missions_intervenants (
     mission_id INT REFERENCES missions (mission_id),
@@ -58,9 +73,9 @@ CREATE TABLE protocoles (
 );
 -- Association 2 --
 CREATE TABLE missions_protocoles (
+    mission_protocole_id BIGSERIAL NOT NULL PRIMARY KEY,
     protocole_id INT REFERENCES protocoles (protocole_id),
-    mission_id INT REFERENCES missions (mission_id),
-    PRIMARY KEY (protocole_id, mission_id)
+    mission_id INT REFERENCES missions (mission_id)
 );
 
 CREATE TABLE balises (
